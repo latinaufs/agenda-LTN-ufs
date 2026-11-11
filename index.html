@@ -2,7 +2,7 @@
 <html lang="pt-BR" data-theme="light" style="color-scheme: light;"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Agenda Latina UFS – Treinos e campeonatos</title>
+<title>Calendário de Treinos</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--tx:#1a1d23;--mu:#5d6572;--ln:#dde2e8;--hd:#263238;--f:#c2185b;--m:#1565c0;--g:#f9a825;--gt:#3e2f00;--ad:#ffb74d;--ca:#ef9a9a;--cat:#7f0000;--fo:#cfd8dc;--fot:#37474f;--om:#f1f3f5;--om2:#aab4bf;--ac:#1565c0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1e2127;--tx:#eceef2;--mu:#9aa3b2;--ln:#343a44;--hd:#0f1114;--f:#d81b60;--m:#1e6fd0;--om:#181b20;--om2:#5b6573;--fo:#3a424c;--fot:#c5ced8;--ac:#6aa9f5;color-scheme:dark}}
@@ -69,7 +69,7 @@ a{color:var(--ac)}.mu{color:var(--mu)}
 <body>
 <div id="app"></div>
 <dialog id="dlg"></dialog>
-<script type="application/json" id="state">{"atualizado":"2026-11-10","treinos":[{"eq":"F","dia":1,"ini":"19:00","fim":"20:30"},{"eq":"F","dia":3,"ini":"19:00","fim":"20:30"},{"eq":"F","dia":6,"ini":"08:00","fim":"12:00"},{"eq":"F","dia":0,"ini":"08:00","fim":"12:00"},{"eq":"M","dia":1,"ini":"20:30","fim":"22:00"},{"eq":"M","dia":3,"ini":"20:30","fim":"22:00"},{"eq":"M","dia":6,"ini":"13:00","fim":"17:00"},{"eq":"M","dia":0,"ini":"13:00","fim":"17:00"}],"eventos":[{"titulo":"Amistoso Masculino","tipo":"campeonato","cat":"M","ini":"2026-11-11","fim":"2026-11-11","local":"ORATÓRIO","status":"A confirmar","fonte":"https://share.google/LM0KXlxnUm0WLSoIr","verif":"2026-11-10","obs":"AS 19H","id":"mwbe55s9"},{"titulo":"Feminino Inter Atléticas","tipo":"campeonato","cat":"A","ini":"2026-11-14","fim":"2026-11-14","local":"UFS","status":"Confirmado","fonte":"https://share.google/Al5wchhjmFQzdBvT5","verif":"2026-11-10","obs":"Início as 8h","id":"mwbe9fcc"}]}</script>
+<script type="application/json" id="state">{"atualizado":"2026-11-11","treinos":[{"eq":"F","dia":1,"ini":"19:00","fim":"20:30"},{"eq":"F","dia":3,"ini":"19:00","fim":"20:30"},{"eq":"F","dia":6,"ini":"08:00","fim":"12:00"},{"eq":"F","dia":0,"ini":"08:00","fim":"12:00"},{"eq":"M","dia":1,"ini":"20:30","fim":"22:00"},{"eq":"M","dia":3,"ini":"20:30","fim":"22:00"},{"eq":"M","dia":6,"ini":"13:00","fim":"17:00"},{"eq":"M","dia":0,"ini":"13:00","fim":"17:00"}],"eventos":[{"titulo":"Amistoso Masculino","tipo":"campeonato","cat":"M","ini":"2026-11-11","fim":"2026-11-11","local":"ORATÓRIO","status":"A confirmar","fonte":"https://share.google/LM0KXlxnUm0WLSoIr","verif":"2026-11-10","obs":"AS 19H","id":"mwbe55s9"},{"titulo":"Feminino Inter Atléticas","tipo":"campeonato","cat":"A","ini":"2026-11-14","fim":"2026-11-14","local":"UFS","status":"Confirmado","fonte":"https://share.google/Al5wchhjmFQzdBvT5","verif":"2026-11-10","obs":"Início as 8h","id":"mwbe9fcc"},{"titulo":"JAS 2026","tipo":"campeonato","cat":"A","ini":"2026-12-05","fim":"2026-12-06","local":"UFS","status":"A confirmar","fonte":"","verif":"2026-11-11","obs":"","id":"mwbmim5p"}]}</script>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -149,7 +149,7 @@ function horView(){
   <div class="sc"><table class="tbh"><tr><th>Equipe</th><th>Dia</th><th>Início</th><th>Fim</th><th>Local</th>${ui.edit?'<th></th>':''}</tr>${rows.join('')}</table></div>`;
 }
 function render(){
-  $('#app').innerHTML=`<div class="top"><div class="wrap"><div><h1>Agenda Latina UFS</h1><div class="sub">Treinos, campeonatos e folgas${S.atualizado?' · atualizado em '+br(S.atualizado):''}</div></div>
+  $('#app').innerHTML=`<div class="top"><div class="wrap"><div><h1>Calendário de Treinos</h1><div class="sub">Treinos, campeonatos e folgas${S.atualizado?' · atualizado em '+br(S.atualizado):''}</div></div>
   <div class="btns">${ui.can?`<button data-act="toggle">${ui.edit?'Sair da edição':'Editar'}</button>`:''}<button data-act="ics">Exportar .ics</button><button data-act="csv">Exportar .csv</button><button data-act="zap">Resumo p/ WhatsApp</button></div></div></div>
   <main>${ui.msg?`<div class="msg">${esc(ui.msg)}</div>`:''}<div class="tabs">${[['ag','Agenda'],['cal','Mês'],['camp','Campeonatos'],['hor','Horários']].map(([k,v])=>`<button class="${ui.tab===k?'on':''}" data-act="tab" data-t="${k}">${v}</button>`).join('')}</div>
   ${ui.tab==='ag'?agView():ui.tab==='cal'?calView():ui.tab==='camp'?campView():horView()}
@@ -169,7 +169,7 @@ function form(e,i){
   $('#dlg').showModal();
   $('#fm').onsubmit=ev=>{const d=Object.fromEntries(new FormData(ev.target));if(d.fim&&d.fim<d.ini)d.fim=d.ini;d.id=e.id||Date.now().toString(36);if(i==null)S.eventos.push(d);else S.eventos[i]=d;ui.dirty=true;render()};
 }
-function dl(name,data){try{const t=name.endsWith('.ics')?'text/calendar':'text/csv';const u=URL.createObjectURL(new Blob([data],{type:t+';charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}catch(x){toast('Não foi possível baixar o arquivo neste navegador.')}}
+function dl(name,data){return (async()=>{try{const d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:name,data});}catch(x){if(x&&x.code==='declined'||x&&x.code==='cancelled')return;toast('Não foi possível salvar o arquivo neste modo de visualização.')}})()}
 function ics(){
   const st=iso(new Date()).replace(/-/g,'')+'T000000Z',E=s=>String(s||'').replace(/[\\;,]/g,'\\$&').replace(/\n/g,'\\n'),BY=['SU','MO','TU','WE','TH','FR','SA'],hm=x=>x.replace(':','')+'00',z=d=>iso(d).replace(/-/g,'');
   const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Calendario Treinos//PT-BR//','CALSCALE:GREGORIAN','X-WR-CALNAME:Treinos e campeonatos','X-WR-TIMEZONE:America/Bahia','BEGIN:VTIMEZONE','TZID:America/Bahia','BEGIN:STANDARD','DTSTART:19700101T000000','TZOFFSETFROM:-0300','TZOFFSETTO:-0300','TZNAME:-03','END:STANDARD','END:VTIMEZONE'];
@@ -224,7 +224,7 @@ document.addEventListener('click',async ev=>{
 });
 document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset.f)return;const r=S.treinos[+t.dataset.i];r[t.dataset.f]=['dia'].includes(t.dataset.f)?+t.value:t.value;ui.dirty=true;render()});
 render();
-
+(async()=>{try{if(typeof claude==='undefined')return;const u=await claude.use('user');ui.can=!!(u&&u.canEdit&&u.canEdit());render()}catch(x){}})();
 </script>
 
 
