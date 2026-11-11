@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light" style="color-scheme: light;"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calendário de Treinos</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--tx:#1a1d23;--mu:#5d6572;--ln:#dde2e8;--hd:#263238;--f:#c2185b;--m:#1565c0;--g:#f9a825;--gt:#3e2f00;--ad:#ffb74d;--ca:#ef9a9a;--cat:#7f0000;--fo:#cfd8dc;--fot:#37474f;--om:#f1f3f5;--om2:#aab4bf;--ac:#1565c0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1e2127;--tx:#eceef2;--mu:#9aa3b2;--ln:#343a44;--hd:#0f1114;--f:#d81b60;--m:#1e6fd0;--om:#181b20;--om2:#5b6573;--fo:#3a424c;--fot:#c5ced8;--ac:#6aa9f5;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14161a;--card:#1e2127;--tx:#eceef2;--mu:#9aa3b2;--ln:#343a44;--hd:#0f1114;--f:#d81b60;--m:#1e6fd0;--om:#181b20;--om2:#5b6573;--fo:#3a424c;--fot:#c5ced8;--ac:#6aa9f5;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.top{background:var(--hd);color:#fff;padding:14px 16px}
+.wrap{max-width:1040px;margin:0 auto}
+.top .wrap{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+h1{margin:0;font-size:1.25rem}.sub{font-size:.8rem;opacity:.75}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+button,select,input,textarea{font:inherit;color:inherit}
+button{border:1px solid var(--ln);background:var(--card);padding:6px 11px;border-radius:8px;cursor:pointer}
+button:hover{border-color:var(--ac)}
+.top button{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+button.d{color:#c62828}
+main{max-width:1040px;margin:0 auto;padding:14px 12px 40px}
+.tabs{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--ln)}
+.tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:8px 14px;color:var(--mu)}
+.tabs button.on{color:var(--tx);border-color:var(--ac);font-weight:600}
+.bar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.mes{font-size:1.4rem;font-weight:700;min-width:200px;text-align:center}
+.leg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;font-size:.75rem}
+.lg{padding:2px 8px;border-radius:999px;font-weight:600}
+.sc{overflow-x:auto}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(104px,1fr));min-width:740px;border-top:1px solid var(--ln);border-left:1px solid var(--ln);background:var(--card)}
+.dh{background:var(--hd);color:#fff;text-align:center;font-size:.72rem;font-weight:700;padding:6px 0;border-right:1px solid var(--ln)}
+.dy{border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);min-height:104px;padding:3px}
+.dy.o{background:var(--om)}.dy.o .n{color:var(--om2)}.dy.o .c{display:none}
+.n{text-align:right;font-weight:700;font-size:.85rem;padding:0 4px 2px}
+.dy.t .n span{background:var(--hd);color:#fff;border-radius:999px;padding:1px 7px}
+.ed .dy:not(.o){cursor:cell}
+.c{display:block;font-size:.7rem;font-weight:600;border-radius:5px;padding:2px 5px;margin-bottom:2px;color:#fff;overflow:hidden;text-overflow:ellipsis}
+.c.F{background:var(--f)}.c.M{background:var(--m)}.c.G{background:var(--g);color:var(--gt)}.c.A{background:var(--ad);color:#4e2a00}.c.X{background:var(--ca);color:var(--cat)}.c.O{background:var(--fo);color:var(--fot)}.c.V{background:var(--ln);color:var(--tx)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--ln);border-radius:10px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}
+th{font-size:.72rem;text-transform:uppercase;color:var(--mu)}
+.empty{color:var(--mu);font-style:italic;padding:18px;text-align:center}
+.tag{font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--ln)}
+.warn{background:#fff3c4;color:#7a5b00}
+.sv{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));background:var(--hd);color:#fff;padding:10px 14px;border-radius:10px;display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap}
+.msg{background:var(--g);color:var(--gt);padding:6px 12px;border-radius:8px;margin-bottom:10px;font-weight:600}
+dialog{border:1px solid var(--ln);border-radius:12px;background:var(--card);color:var(--tx);width:min(520px,94vw);padding:16px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+label{display:block;font-size:.75rem;color:var(--mu);margin:8px 0 2px}
+dialog input,dialog select,dialog textarea,td input,td select{width:100%;padding:6px 8px;border:1px solid var(--ln);border-radius:7px;background:var(--bg)}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+a{color:var(--ac)}.mu{color:var(--mu)}
+.chips{display:flex;gap:6px;margin-bottom:12px}.chips button{flex:1;padding:10px 6px;border-radius:999px}.chips button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.dc{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin-bottom:10px}.dc.h{border-color:var(--ac)}
+.dc h3{margin:0 0 4px;font-size:.78rem;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
+.it{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--ln)}.it:first-of-type{border-top:0}
+.tm{font-weight:700;min-width:100px;font-variant-numeric:tabular-nums}.loc{font-size:.76rem;color:var(--mu);margin-top:1px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px}
+@media (max-width:700px){main{padding:10px 10px 90px}.top{padding:10px 12px}h1{font-size:1.05rem}.btns button{padding:9px 12px}.tabs{overflow-x:auto}.tabs button{white-space:nowrap;padding:10px 12px}.mes{font-size:1.1rem;min-width:0}
+.tbc,.tbh{border:0;background:none}.tbc tr:first-child,.tbh tr:first-child{display:none}.tbc tr,.tbh tr{display:block;background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:8px 12px;margin-bottom:10px}.tbc td,.tbh td{display:block;border:0;padding:3px 0}
+.tbc td:nth-child(n+2)::before,.tbh td:nth-child(n+1)::before{font-size:.7rem;color:var(--mu);display:block}
+.tbc td:nth-child(2)::before{content:"Datas"}.tbc td:nth-child(3)::before{content:"Local"}.tbc td:nth-child(4)::before{content:"Status"}.tbc td:nth-child(5)::before{content:"Fonte"}.tbc td:nth-child(6)::before{content:"Verificado"}
+.tbh td:nth-child(1)::before{content:"Equipe"}.tbh td:nth-child(2)::before{content:"Dia"}.tbh td:nth-child(3)::before{content:"Início"}.tbh td:nth-child(4)::before{content:"Fim"}.tbh td:nth-child(5)::before{content:"Local"}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<dialog id="dlg"></dialog>
+<script type="application/json" id="state">{"atualizado":"2026-11-11","treinos":[{"eq":"F","dia":1,"ini":"19:00","fim":"20:30"},{"eq":"F","dia":3,"ini":"19:00","fim":"20:30"},{"eq":"F","dia":6,"ini":"08:00","fim":"12:00"},{"eq":"F","dia":0,"ini":"08:00","fim":"12:00"},{"eq":"M","dia":1,"ini":"20:30","fim":"22:00"},{"eq":"M","dia":3,"ini":"20:30","fim":"22:00"},{"eq":"M","dia":6,"ini":"13:00","fim":"17:00"},{"eq":"M","dia":0,"ini":"13:00","fim":"17:00"}],"eventos":[{"titulo":"Amistoso Masculino","tipo":"campeonato","cat":"M","ini":"2026-11-11","fim":"2026-11-11","local":"ORATÓRIO","status":"A confirmar","fonte":"https://share.google/LM0KXlxnUm0WLSoIr","verif":"2026-11-10","obs":"AS 19H","id":"mwbe55s9"},{"titulo":"Feminino Inter Atléticas","tipo":"campeonato","cat":"A","ini":"2026-11-14","fim":"2026-11-14","local":"UFS","status":"Confirmado","fonte":"https://share.google/Al5wchhjmFQzdBvT5","verif":"2026-11-10","obs":"Início as 8h","id":"mwbe9fcc"},{"titulo":"JAS 2026","tipo":"campeonato","cat":"A","ini":"2026-12-05","fim":"2026-12-06","local":"UFS","status":"A confirmar","fonte":"","verif":"2026-11-11","obs":"","id":"mwbmim5p"}]}</script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DIAS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],DC=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const EQ={F:'Feminino',M:'Masculino'},CAT={F:'Feminino',M:'Masculino',A:'Ambos'};
+const TIPO={campeonato:'Campeonato',folga:'Folga / sem treino',aviso:'Aviso'};
+const STAT=['A confirmar','Confirmado','Adiado','Cancelado','Encerrado'];
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const br=s=>s?s.split('-').reverse().join('/'):'';
+const covers=(e,s)=>e.ini&&s>=e.ini&&s<=(e.fim||e.ini);
+const now=new Date(),TODAY=iso(now);
+let orig=$('#state').textContent,S=JSON.parse(orig);
+const ui={tab:matchMedia('(max-width:700px)').matches?'ag':'cal',eq:'T',days:21,y:now.getFullYear(),m:now.getMonth(),edit:false,dirty:false,can:false,msg:''};
+const toast=t=>{ui.msg=t;render();setTimeout(()=>{ui.msg='';render()},4000)};
+const chipCls=e=>e.tipo==='folga'?'O':e.tipo==='aviso'?'V':e.status==='Cancelado'?'X':e.status==='Adiado'?'A':'G';
+
+function calView(){
+  const f=new Date(ui.y,ui.m,1),st=new Date(ui.y,ui.m,1-f.getDay());
+  let h=DC.map(d=>`<div class="dh">${d.toUpperCase()}</div>`).join('');
+  for(let i=0;i<42;i++){
+    const d=new Date(st.getFullYear(),st.getMonth(),st.getDate()+i),s=iso(d),inM=d.getMonth()===ui.m;
+    const fol=S.eventos.filter(e=>e.tipo==='folga'&&covers(e,s));
+    let c='';
+    S.treinos.filter(t=>t.dia===d.getDay()).sort((a,b)=>a.ini.localeCompare(b.ini)).forEach(t=>{
+      const bl=fol.some(x=>x.cat==='A'||x.cat===t.eq);
+      c+=bl?`<span class="c O">${t.eq==='F'?'Fem':'Masc'} · sem treino</span>`:`<span class="c ${t.eq}">${t.eq==='F'?'Fem':'Masc'} · ${t.ini}–${t.fim}</span>`;
+    });
+    S.eventos.filter(e=>covers(e,s)).forEach(e=>{c+=`<span class="c ${chipCls(e)}" title="${esc(e.titulo)}">${esc(e.titulo)}${e.status&&e.tipo==='campeonato'?' ('+esc(e.status)+')':''}</span>`});
+    h+=`<div class="dy${inM?'':' o'}${s===TODAY?' t':''}" ${ui.edit&&inM?`data-act="novo" data-d="${s}"`:''}><div class="n"><span>${d.getDate()}</span></div><div class="c0">${c.replace(/class="c /g,'class="c ')}</div></div>`;
+  }
+  return `<div class="bar"><div class="btns"><button data-act="prev">‹</button><button data-act="hoje">Hoje</button><button data-act="next">›</button></div><div class="mes">${MES[ui.m]} ${ui.y}</div><div style="min-width:120px"></div></div>
+  <div class="leg"><span class="lg c F">Feminino</span><span class="lg c M">Masculino</span><span class="lg c G">Campeonato</span><span class="lg c A">Adiado</span><span class="lg c X">Cancelado</span><span class="lg c O">Folga</span><span class="lg c V">Aviso</span></div>
+  ${ui.edit?'<p class="mu" style="margin:0 0 8px">Modo edição: clique em um dia para adicionar um evento naquela data.</p>':''}
+  <div class="sc"><div class="grid ${ui.edit?'ed':''}">${h}</div></div>`;
+}
+function agView(){
+  const A=ui.eq,ok=c=>A==='T'||c==='A'||c===A;
+  let h=`<div class="chips">${[['T','Todos'],['F','Feminino'],['M','Masculino']].map(([k,v])=>`<button class="${A===k?'on':''}" data-act="eq" data-k="${k}">${v}</button>`).join('')}</div>`,n=0;
+  for(let i=0;i<ui.days;i++){
+    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i),s=iso(d),fol=S.eventos.filter(e=>e.tipo==='folga'&&covers(e,s)),
+      tr=S.treinos.filter(t=>t.dia===d.getDay()&&(A==='T'||t.eq===A)).sort((a,b)=>a.ini.localeCompare(b.ini)),
+      ev=S.eventos.filter(e=>e.tipo!=='folga'&&covers(e,s)&&ok(e.cat));
+    if(!tr.length&&!ev.length)continue;
+    let it=tr.map(t=>{const b=fol.find(x=>x.cat==='A'||x.cat===t.eq);
+      return b?`<div class="it"><div class="tm mu">${t.ini}–${t.fim}</div><div><span class="mu">${EQ[t.eq]} · sem treino</span><div class="loc">${esc(b.titulo)}</div></div></div>`
+      :`<div class="it"><div class="tm">${t.ini}–${t.fim}</div><div><span class="dot" style="background:var(--${t.eq==='F'?'f':'m'})"></span>${EQ[t.eq]}${t.local?`<div class="loc">${esc(t.local)}</div>`:''}</div></div>`}).join('');
+    it+=ev.map(e=>`<div class="it"><div class="tm"><span class="c ${chipCls(e)}" style="display:inline-block">${TIPO[e.tipo]}</span></div><div><b>${esc(e.titulo)}</b>${e.tipo==='campeonato'&&e.status?` <span class="mu">(${esc(e.status)})</span>`:''}${e.local?`<div class="loc">${esc(e.local)}</div>`:''}</div></div>`).join('');
+    h+=`<div class="dc${i===0?' h':''}"><h3>${i===0?'Hoje':i===1?'Amanhã':DIAS[d.getDay()]} · ${pad(d.getDate())}/${pad(d.getMonth()+1)}</h3>${it}</div>`;n++;
+  }
+  if(!n)h+='<div class="empty">Nenhum treino ou evento nos próximos dias.</div>';
+  return h+'<button data-act="mais" style="width:100%;padding:11px">Ver mais dias</button>';
+}
+function dias(e){const d=Math.round((parse(e.ini)-parse(TODAY))/864e5);return covers(e,TODAY)?'em andamento':d>0?`em ${d} dia${d>1?'s':''}`:'já passou'}
+function stale(e){return !e.verif||(parse(TODAY)-parse(e.verif))/864e5>30}
+function campView(){
+  const L=[...S.eventos].sort((a,b)=>(a.ini||'').localeCompare(b.ini||''));
+  if(!L.length)return `<div class="bar"><div></div>${ui.edit?'<button class="p" data-act="novo">+ Novo evento</button>':''}</div><div class="empty">Nenhum campeonato ou evento cadastrado ainda.${ui.can?' Ative “Editar” e clique em “+ Novo evento”.':''}</div>`;
+  return `<div class="bar"><div class="mu">Só registre datas confirmadas pela entidade organizadora, com o link da fonte.</div>${ui.edit?'<button class="p" data-act="novo">+ Novo evento</button>':''}</div>
+  <div class="sc"><table class="tbc"><tr><th>Evento</th><th>Datas</th><th>Local</th><th>Status</th><th>Fonte</th><th>Verificado</th>${ui.edit?'<th></th>':''}</tr>`+L.map(e=>{
+    const i=S.eventos.indexOf(e),ok=/^https?:\/\//i.test(e.fonte||'');
+    return `<tr><td><b>${esc(e.titulo)}</b><br><span class="mu">${TIPO[e.tipo]} · ${CAT[e.cat]}</span>${e.obs?`<br><span class="mu">${esc(e.obs)}</span>`:''}</td>
+    <td>${br(e.ini)}${e.fim&&e.fim!==e.ini?' a '+br(e.fim):''}<br><span class="mu">${e.ini?dias(e):''}</span></td><td>${esc(e.local)}</td>
+    <td>${e.tipo==='campeonato'?`<span class="tag c ${chipCls(e)}">${esc(e.status||'A confirmar')}</span>`:'—'}</td>
+    <td>${ok?`<a href="${esc(e.fonte)}" target="_blank" rel="noopener noreferrer">abrir</a>`:'<span class="tag warn">sem fonte</span>'}</td>
+    <td>${e.verif?br(e.verif):'—'}${stale(e)&&e.tipo==='campeonato'?'<br><span class="tag warn">conferir</span>':''}</td>
+    ${ui.edit?`<td style="white-space:nowrap"><button data-act="edit" data-i="${i}">Editar</button> <button class="d" data-act="del" data-i="${i}">×</button></td>`:''}</tr>`}).join('')+'</table></div>';
+}
+function horView(){
+  const rows=S.treinos.map((t,i)=>ui.edit?`<tr><td><select data-f="eq" data-i="${i}">${Object.entries(EQ).map(([k,v])=>`<option value="${k}"${t.eq===k?' selected':''}>${v}</option>`).join('')}</select></td>
+  <td><select data-f="dia" data-i="${i}">${DIAS.map((d,k)=>`<option value="${k}"${t.dia===k?' selected':''}>${d}</option>`).join('')}</select></td>
+  <td><input type="time" data-f="ini" data-i="${i}" value="${t.ini}"></td><td><input type="time" data-f="fim" data-i="${i}" value="${t.fim}"></td><td><input data-f="local" data-i="${i}" value="${esc(t.local)}" placeholder="Ex.: Quadra, endereço"></td><td><button class="d" data-act="deltr" data-i="${i}">×</button></td></tr>`
+  :`<tr><td><span class="tag c ${t.eq}">${EQ[t.eq]}</span></td><td>${DIAS[t.dia]}</td><td>${t.ini}</td><td>${t.fim}</td><td>${esc(t.local)||'—'}</td></tr>`);
+  return `<div class="bar"><div class="mu">Horários fixos da semana. Alterações valem para todos os meses do calendário.</div>${ui.edit?'<button class="p" data-act="newtr">+ Novo treino</button>':''}</div>
+  <div class="sc"><table class="tbh"><tr><th>Equipe</th><th>Dia</th><th>Início</th><th>Fim</th><th>Local</th>${ui.edit?'<th></th>':''}</tr>${rows.join('')}</table></div>`;
+}
+function render(){
+  $('#app').innerHTML=`<div class="top"><div class="wrap"><div><h1>Calendário de Treinos</h1><div class="sub">Treinos, campeonatos e folgas${S.atualizado?' · atualizado em '+br(S.atualizado):''}</div></div>
+  <div class="btns">${ui.can?`<button data-act="toggle">${ui.edit?'Sair da edição':'Editar'}</button>`:''}<button data-act="ics">Exportar .ics</button><button data-act="csv">Exportar .csv</button><button data-act="zap">Resumo p/ WhatsApp</button></div></div></div>
+  <main>${ui.msg?`<div class="msg">${esc(ui.msg)}</div>`:''}<div class="tabs">${[['ag','Agenda'],['cal','Mês'],['camp','Campeonatos'],['hor','Horários']].map(([k,v])=>`<button class="${ui.tab===k?'on':''}" data-act="tab" data-t="${k}">${v}</button>`).join('')}</div>
+  ${ui.tab==='ag'?agView():ui.tab==='cal'?calView():ui.tab==='camp'?campView():horView()}
+  ${ui.dirty?`<div class="sv"><span>Alterações não salvas. Salvar publica a nova versão para todos que abrirem o link.</span><span class="btns"><button data-act="disc">Descartar</button><button class="p" data-act="save">Salvar e publicar</button></span></div>`:''}</main>`;
+}
+function form(e,i){
+  e=e||{tipo:'campeonato',cat:'A',status:'A confirmar',titulo:'',ini:'',fim:'',local:'',fonte:'',verif:TODAY,obs:''};
+  const o=(m,v)=>Object.entries(m).map(([k,t])=>`<option value="${k}"${v===k?' selected':''}>${t}</option>`).join('');
+  $('#dlg').innerHTML=`<form method="dialog" id="fm"><b>${i==null?'Novo evento':'Editar evento'}</b>
+  <label>Título</label><input name="titulo" required value="${esc(e.titulo)}">
+  <div class="r2"><div><label>Tipo</label><select name="tipo">${o(TIPO,e.tipo)}</select></div><div><label>Categoria</label><select name="cat">${o(CAT,e.cat)}</select></div></div>
+  <div class="r2"><div><label>Data de início</label><input type="date" name="ini" required value="${e.ini}"></div><div><label>Data de fim (opcional)</label><input type="date" name="fim" value="${e.fim||''}"></div></div>
+  <div class="r2"><div><label>Local</label><input name="local" value="${esc(e.local)}"></div><div><label>Status (campeonato)</label><select name="status">${STAT.map(s=>`<option${e.status===s?' selected':''}>${s}</option>`).join('')}</select></div></div>
+  <label>Link da fonte oficial</label><input name="fonte" placeholder="https://…" value="${esc(e.fonte)}">
+  <div class="r2"><div><label>Última verificação</label><input type="date" name="verif" value="${e.verif||''}"></div><div><label>Observações</label><input name="obs" value="${esc(e.obs)}"></div></div>
+  <div class="btns" style="margin-top:14px;justify-content:flex-end"><button type="button" data-act="cancel">Cancelar</button><button class="p" value="ok">Salvar</button></div></form>`;
+  $('#dlg').showModal();
+  $('#fm').onsubmit=ev=>{const d=Object.fromEntries(new FormData(ev.target));if(d.fim&&d.fim<d.ini)d.fim=d.ini;d.id=e.id||Date.now().toString(36);if(i==null)S.eventos.push(d);else S.eventos[i]=d;ui.dirty=true;render()};
+}
+function dl(name,data){return (async()=>{try{const d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:name,data});}catch(x){if(x&&x.code==='declined'||x&&x.code==='cancelled')return;toast('Não foi possível salvar o arquivo neste modo de visualização.')}})()}
+function ics(){
+  const st=iso(new Date()).replace(/-/g,'')+'T000000Z',E=s=>String(s||'').replace(/[\\;,]/g,'\\$&').replace(/\n/g,'\\n'),BY=['SU','MO','TU','WE','TH','FR','SA'],hm=x=>x.replace(':','')+'00',z=d=>iso(d).replace(/-/g,'');
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Calendario Treinos//PT-BR//','CALSCALE:GREGORIAN','X-WR-CALNAME:Treinos e campeonatos','X-WR-TIMEZONE:America/Bahia','BEGIN:VTIMEZONE','TZID:America/Bahia','BEGIN:STANDARD','DTSTART:19700101T000000','TZOFFSETFROM:-0300','TZOFFSETTO:-0300','TZNAME:-03','END:STANDARD','END:VTIMEZONE'];
+  const h0=parse(TODAY);
+  S.treinos.forEach((t,i)=>{const d=new Date(h0);d.setDate(d.getDate()+((t.dia-d.getDay()+7)%7));
+    L.push('BEGIN:VEVENT',`UID:t${i}-${z(d)}@treinos`,'DTSTAMP:'+st,`DTSTART;TZID=America/Bahia:${z(d)}T${hm(t.ini)}`,`DTEND;TZID=America/Bahia:${z(d)}T${hm(t.fim)}`,`RRULE:FREQ=WEEKLY;BYDAY=${BY[t.dia]}`,'SUMMARY:Treino '+EQ[t.eq],'LOCATION:'+E(t.local));
+    S.eventos.filter(x=>x.tipo==='folga'&&(x.cat==='A'||x.cat===t.eq)).forEach(x=>{for(let c=parse(x.ini),e=parse(x.fim||x.ini);c<=e;c.setDate(c.getDate()+1))if(c.getDay()===t.dia&&c>=d)L.push(`EXDATE;TZID=America/Bahia:${z(c)}T${hm(t.ini)}`)});
+    L.push('END:VEVENT')});
+  S.eventos.filter(x=>x.tipo!=='folga'&&x.ini).forEach(x=>{const e=parse(x.fim||x.ini);e.setDate(e.getDate()+1);
+    L.push('BEGIN:VEVENT','UID:e'+x.id+'@treinos','DTSTAMP:'+st,'DTSTART;VALUE=DATE:'+z(parse(x.ini)),'DTEND;VALUE=DATE:'+z(e),'SUMMARY:'+E(x.titulo+(x.tipo==='campeonato'&&x.status?' ('+x.status+')':'')),'LOCATION:'+E(x.local),'DESCRIPTION:'+E([CAT[x.cat],x.fonte,x.obs].filter(Boolean).join(' · ')),'END:VEVENT')});
+  L.push('END:VCALENDAR');return L.join('\r\n')+'\r\n';
+}
+function csv(){
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"',H=['Evento','Tipo','Categoria','Início','Fim','Local','Status','Fonte','Verificado em','Observações'];
+  return '\ufeff'+[H.map(q).join(';'),...[...S.eventos].sort((a,b)=>a.ini.localeCompare(b.ini)).map(e=>[e.titulo,TIPO[e.tipo],CAT[e.cat],br(e.ini),br(e.fim),e.local,e.tipo==='campeonato'?e.status:'',e.fonte,br(e.verif),e.obs].map(q).join(';'))].join('\r\n');
+}
+function resumo(){
+  let t=`*Treinos e campeonatos*${S.atualizado?' (atualizado em '+br(S.atualizado)+')':''}\n\n*Treinos*\n`;
+  for(const k of['F','M']){const g={};S.treinos.filter(x=>x.eq===k).forEach(x=>{(g[x.ini+'–'+x.fim+(x.local?' ('+x.local+')':'')]??=[]).push(DC[x.dia])});t+=EQ[k]+': '+Object.entries(g).map(([h,d])=>d.join('/')+' '+h).join(' · ')+'\n'}
+  const p=S.eventos.filter(e=>(e.fim||e.ini)>=TODAY).sort((a,b)=>a.ini.localeCompare(b.ini));
+  t+='\n*Próximos eventos*\n'+(p.length?p.map(e=>`• ${br(e.ini)}${e.fim&&e.fim!==e.ini?' a '+br(e.fim):''} – ${e.titulo} (${CAT[e.cat]})${e.local?' – '+e.local:''}${e.tipo==='campeonato'?' [' +e.status+']':''}`).join('\n'):'Nenhum cadastrado.');
+  return t;
+}
+async function save(){
+  S.atualizado=TODAY;
+  try{const a=await claude.use('artifact');if(!a)throw{code:'not_granted'};
+    const c=document.documentElement.cloneNode(true);c.querySelector('#app').innerHTML='';const d=c.querySelector('#dlg');d.innerHTML='';d.removeAttribute('open');
+    c.querySelector('#state').textContent=JSON.stringify(S).replace(/</g,'\\u003c');
+    await a.publish('<!DOCTYPE html>\n'+c.outerHTML);
+  }catch(x){if(x&&x.code==='conflict')return;if(x&&(x.code==='not_writer'||x.code==='not_granted')){ui.can=false;ui.edit=false;toast('Você está em modo somente leitura e não pode publicar alterações.')}else toast('Não consegui salvar agora. Tente de novo em instantes.')}
+}
+document.addEventListener('click',async ev=>{
+  const b=ev.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,i=+b.dataset.i;
+  if(a==='tab'){ui.tab=b.dataset.t;render()}
+  else if(a==='eq'){ui.eq=b.dataset.k;render()}
+  else if(a==='mais'){ui.days+=14;render()}
+  else if(a==='prev'||a==='next'){ui.m+=a==='next'?1:-1;if(ui.m<0){ui.m=11;ui.y--}if(ui.m>11){ui.m=0;ui.y++}render()}
+  else if(a==='hoje'){ui.y=now.getFullYear();ui.m=now.getMonth();render()}
+  else if(a==='toggle'){ui.edit=!ui.edit;render()}
+  else if(a==='novo'){form(b.dataset.d?{tipo:'campeonato',cat:'A',status:'A confirmar',titulo:'',ini:b.dataset.d,fim:'',local:'',fonte:'',verif:TODAY,obs:''}:null)}
+  else if(a==='edit')form(S.eventos[i],i);
+  else if(a==='del'){if(confirm('Excluir este evento?')){S.eventos.splice(i,1);ui.dirty=true;render()}}
+  else if(a==='newtr'){S.treinos.push({eq:'F',dia:1,ini:'19:00',fim:'20:30'});ui.dirty=true;render()}
+  else if(a==='deltr'){S.treinos.splice(i,1);ui.dirty=true;render()}
+  else if(a==='cancel')$('#dlg').close();
+  else if(a==='disc'){S=JSON.parse(orig);ui.dirty=false;render()}
+  else if(a==='save')save();
+  else if(a==='ics')dl('treinos-e-campeonatos.ics',ics());
+  else if(a==='csv')dl('campeonatos.csv',csv());
+  else if(a==='zap'){$('#dlg').innerHTML=`<b>Resumo para colar no WhatsApp</b><textarea id="tx" rows="12" style="width:100%;margin-top:8px;padding:8px;border:1px solid var(--ln);border-radius:8px;background:var(--bg)"></textarea><div class="btns" style="margin-top:10px;justify-content:flex-end"><button data-act="copy">Copiar</button><button class="p" data-act="cancel">Fechar</button></div>`;$('#tx').value=resumo();$('#dlg').showModal()}
+  else if(a==='copy'){const t=$('#tx');t.select();try{await navigator.clipboard.writeText(t.value);b.textContent='Copiado'}catch(x){b.textContent='Selecione e copie (Ctrl+C)'}}
+});
+document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset.f)return;const r=S.treinos[+t.dataset.i];r[t.dataset.f]=['dia'].includes(t.dataset.f)?+t.value:t.value;ui.dirty=true;render()});
+render();
+(async()=>{try{if(typeof claude==='undefined')return;const u=await claude.use('user');ui.can=!!(u&&u.canEdit&&u.canEdit());render()}catch(x){}})();
+</script>
+
+
+</body></html>
