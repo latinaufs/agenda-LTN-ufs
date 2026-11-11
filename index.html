@@ -78,7 +78,7 @@ a{color:var(--ac)}.mu{color:var(--mu)}
 <body>
 <div id="app"></div>
 <dialog id="dlg"></dialog>
-<script type="application/json" id="state">{"atualizado":"2026-11-11","treinos":[{"eq":"F","dia":1,"ini":"19:00","fim":"20:30","local":"RENATAO"},{"eq":"F","dia":3,"ini":"19:00","fim":"20:30"},{"eq":"F","dia":6,"ini":"08:00","fim":"12:00","local":"UFS"},{"eq":"F","dia":0,"ini":"08:00","fim":"12:00","local":"UFS"},{"eq":"M","dia":1,"ini":"20:30","fim":"22:00","local":"RENATAO"},{"eq":"M","dia":3,"ini":"20:30","fim":"22:00"},{"eq":"M","dia":6,"ini":"13:00","fim":"17:00","local":"UFS"},{"eq":"M","dia":0,"ini":"13:00","fim":"17:00","local":"UFS"}],"eventos":[{"titulo":"Amistoso Masculino","tipo":"campeonato","cat":"M","ini":"2026-11-11","fim":"2026-11-11","local":"ORATÓRIO","status":"A confirmar","fonte":"https://share.google/LM0KXlxnUm0WLSoIr","verif":"2026-11-10","obs":"AS 19H","id":"mwbe55s9"},{"titulo":"Feminino Inter Atléticas","tipo":"campeonato","cat":"A","ini":"2026-11-14","fim":"2026-11-14","local":"UFS","status":"Confirmado","fonte":"https://share.google/Al5wchhjmFQzdBvT5","verif":"2026-11-10","obs":"Início as 8h","id":"mwbe9fcc"},{"titulo":"JAS 2026","tipo":"campeonato","cat":"M","ini":"2026-12-05","fim":"2026-12-06","local":"UFS","status":"A confirmar","fonte":"","verif":"2026-11-11","obs":"","id":"mwbmim5p"}]}</script>
+<script type="application/json" id="state">{"atualizado":"2026-11-11","treinos":[{"eq":"F","dia":1,"ini":"19:00","fim":"20:30","local":"RENATAO","mod":"volei"},{"eq":"F","dia":3,"ini":"19:00","fim":"20:30","mod":"volei"},{"eq":"F","dia":6,"ini":"08:00","fim":"12:00","local":"UFS","mod":"volei"},{"eq":"F","dia":0,"ini":"08:00","fim":"12:00","local":"UFS","mod":"volei"},{"eq":"M","dia":1,"ini":"20:30","fim":"22:00","local":"RENATAO","mod":"volei"},{"eq":"M","dia":3,"ini":"20:30","fim":"22:00","mod":"volei"},{"eq":"M","dia":6,"ini":"13:00","fim":"17:00","local":"UFS","mod":"volei"},{"eq":"M","dia":0,"ini":"13:00","fim":"17:00","local":"UFS","mod":"volei"},{"mod":"futsal","eq":"F","dia":6,"ini":"09:00","fim":"12:00","local":"Ginásio da UFS"},{"mod":"handebol","eq":"F","dia":0,"ini":"08:00","fim":"11:00","local":"Ginásio da UFS"},{"mod":"handebol","eq":"M","dia":0,"ini":"08:00","fim":"11:00","local":"Ginásio da UFS"}],"eventos":[{"titulo":"Amistoso Masculino","tipo":"campeonato","cat":"M","ini":"2026-11-11","fim":"2026-11-11","local":"ORATÓRIO","status":"A confirmar","fonte":"https://share.google/LM0KXlxnUm0WLSoIr","verif":"2026-11-10","obs":"AS 19H","id":"mwbe55s9","mod":"volei"},{"titulo":"Feminino Inter Atléticas","tipo":"campeonato","cat":"A","ini":"2026-11-14","fim":"2026-11-14","local":"UFS","status":"Confirmado","fonte":"https://share.google/Al5wchhjmFQzdBvT5","verif":"2026-11-10","obs":"Início as 8h","id":"mwbe9fcc","mod":"volei"},{"titulo":"JAS 2026","tipo":"campeonato","cat":"M","ini":"2026-12-05","fim":"2026-12-06","local":"UFS","status":"A confirmar","fonte":"","verif":"2026-11-11","obs":"","id":"mwbmim5p","mod":"volei"}]}</script>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -93,7 +93,9 @@ const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
 const br=s=>s?s.split('-').reverse().join('/'):'';
 const covers=(e,s)=>e.ini&&s>=e.ini&&s<=(e.fim||e.ini);
 const now=(()=>{try{const[y,m,d]=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date()).split('-').map(Number);return new Date(y,m-1,d)}catch(e){const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}})(),TODAY=iso(now);
-let orig=$('#state').textContent,S=JSON.parse(orig);
+let orig=$('#state').textContent,ALL=JSON.parse(orig),S=ALL;
+const MN={volei:'Vôlei',futsal:'Futsal',handebol:'Handebol'};
+function sel(){S={atualizado:ALL.atualizado,treinos:ALL.treinos.filter(t=>(t.mod||'volei')===ui.mod),eventos:ALL.eventos.filter(e=>(e.mod||'volei')===ui.mod)}}
 const ui={tab:matchMedia('(max-width:700px)').matches?'ag':'cal',eq:'T',days:21,mod:null,y:now.getFullYear(),m:now.getMonth(),edit:false,dirty:false,can:false,msg:''};
 const toast=t=>{ui.msg=t;render();setTimeout(()=>{ui.msg='';render()},4000)};
 const chipCls=e=>e.tipo==='folga'?'O':e.tipo==='aviso'?'V':e.status==='Cancelado'?'X':e.status==='Adiado'?'A':'G';
@@ -119,7 +121,7 @@ function calView(){
 }
 function agView(){
   const A=ui.eq,ok=c=>A==='T'||c==='A'||c===A;
-  let h=`<div class="chips">${[['T','Todos'],['F','Feminino'],['M','Masculino']].map(([k,v])=>`<button class="${A===k?'on':''}" data-act="eq" data-k="${k}">${v}</button>`).join('')}</div>`,n=0;
+  let h=`<div class="chips">${[['T','Todos'],['F','Feminino'],['M','Masculino']].filter(([k])=>k==='T'||S.treinos.some(t=>t.eq===k)).map(([k,v])=>`<button class="${A===k?'on':''}" data-act="eq" data-k="${k}">${v}</button>`).join('')}</div>`,n=0;
   for(let i=0;i<ui.days;i++){
     const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i),s=iso(d),fol=S.eventos.filter(e=>e.tipo==='folga'&&covers(e,s)),
       tr=S.treinos.filter(t=>t.dia===d.getDay()&&(A==='T'||t.eq===A)).sort((a,b)=>a.ini.localeCompare(b.ini)),
@@ -135,9 +137,9 @@ function agView(){
   return h+'<button data-act="mais" style="width:100%;padding:11px">Ver mais dias</button>';
 }
 function modView(){
-  const L=[['Vôlei',1],['Futsal',0],['Basquete',0],['Handebol',0],['Natação',0],['Queimado',0]];
+  const L=[['Vôlei','volei'],['Futsal','futsal'],['Basquete',''],['Handebol','handebol'],['Natação',''],['Queimado','']];
   return `<div class="bar"><div class="mu">Escolha a modalidade para ver treinos, locais e campeonatos.</div></div>
-  <div class="mods">${L.map(([n,on])=>`<div class="md${on?' on':''}"><div class="mi">${n[0]}</div><div class="mn">${n}</div>${on?'<span class="mb ok">Disponível</span><button data-act="open">Abrir</button>':'<span class="mb">Em breve</span><div class="mu" style="font-size:.78rem">Agenda será liberada em breve.</div>'}</div>`).join('')}</div>`;
+  <div class="mods">${L.map(([n,id])=>`<div class="md${id?' on':''}"><div class="mi">${n[0]}</div><div class="mn">${n}</div>${id?`<span class="mb ok">Disponível</span><button data-act="open" data-m="${id}">Abrir</button>`:'<span class="mb">Em breve</span><div class="mu" style="font-size:.78rem">Agenda será liberada em breve.</div>'}</div>`).join('')}</div>`;
 }
 const FT=new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}),FD=new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',weekday:'short',day:'2-digit',month:'2-digit'});
 function tick(){const d=new Date(),a=$('#ck'),b=$('#cd');if(a)a.textContent=FT.format(d);if(b)b.textContent=FD.format(d).replace('.','')}
@@ -166,9 +168,9 @@ function horView(){
   <div class="sc"><table class="tbh"><tr><th>Equipe</th><th>Dia</th><th>Início</th><th>Fim</th><th>Local</th>${ui.edit?'<th></th>':''}</tr>${rows.join('')}</table></div>`;
 }
 function render(){
-  $('#app').innerHTML=`<div class="top"><div class="wrap"><div class="clk"><span>Brasília</span><span id="cd"></span><b id="ck"></b></div><div><h1>AGENDA DE TREINOS, LATINA UFS</h1><div class="sub">${ui.mod?'Vôlei · treinos, campeonatos e folgas'+(S.atualizado?' · atualizado em '+br(S.atualizado):''):'Atlética Latina · escolha a sua modalidade'}</div></div>
+  $('#app').innerHTML=`<div class="top"><div class="wrap"><div class="clk"><span>Brasília</span><span id="cd"></span><b id="ck"></b></div><div><h1>AGENDA DE TREINOS, LATINA UFS</h1><div class="sub">${ui.mod?MN[ui.mod]+' · treinos, campeonatos e folgas'+(S.atualizado?' · atualizado em '+br(S.atualizado):''):'Atlética Latina · escolha a sua modalidade'}</div></div>
   ${ui.can?`<button data-act="toggle">${ui.edit?'Sair da edição':'Editar'}</button>`:''}</div></div><div class="band" aria-label="A maior atlética de Sergipe. Você, sempre no pódio!"><div class="mk"><span class="a">A MAIOR ATLÉTICA DE SERGIPE</span><span class="s">★</span><span class="v">VOCÊ, SEMPRE NO PÓDIO!</span><span class="s">★</span><span class="a">A MAIOR ATLÉTICA DE SERGIPE</span><span class="s">★</span><span class="v">VOCÊ, SEMPRE NO PÓDIO!</span><span class="s">★</span><span class="a dup">A MAIOR ATLÉTICA DE SERGIPE</span><span class="s dup">★</span><span class="v dup">VOCÊ, SEMPRE NO PÓDIO!</span><span class="s dup">★</span><span class="a dup">A MAIOR ATLÉTICA DE SERGIPE</span><span class="s dup">★</span><span class="v dup">VOCÊ, SEMPRE NO PÓDIO!</span><span class="s dup">★</span></div></div>
-  <main>${ui.msg?`<div class="msg">${esc(ui.msg)}</div>`:''}${ui.mod?`<div class="bk"><button data-act="home">← Modalidades</button><b>Vôlei</b></div><div class="tabs">${[['ag','Agenda'],['cal','Mês'],['camp','Campeonatos'],['hor','Horários']].map(([k,v])=>`<button class="${ui.tab===k?'on':''}" data-act="tab" data-t="${k}">${v}</button>`).join('')}</div>`:''}
+  <main>${ui.msg?`<div class="msg">${esc(ui.msg)}</div>`:''}${ui.mod?`<div class="bk"><button data-act="home">← Modalidades</button><b>${MN[ui.mod]}</b></div><div class="tabs">${[['ag','Agenda'],['cal','Mês'],['camp','Campeonatos'],['hor','Horários']].map(([k,v])=>`<button class="${ui.tab===k?'on':''}" data-act="tab" data-t="${k}">${v}</button>`).join('')}</div>`:''}
   ${ui.mod?(ui.tab==='ag'?agView():ui.tab==='cal'?calView():ui.tab==='camp'?campView():horView()):modView()}
   ${ui.dirty?`<div class="sv"><span>Alterações não salvas. Salvar publica a nova versão para todos que abrirem o link.</span><span class="btns"><button data-act="disc">Descartar</button><button class="p" data-act="save">Salvar e publicar</button></span></div>`:''}${ui.mod?'<div class="ft"><button data-act="ics">Baixar agenda (.ics)</button><button data-act="csv">Baixar campeonatos (.csv)</button><button data-act="zap">Resumo p/ WhatsApp</button></div>':''}</main>`;tick();
 }
@@ -192,7 +194,7 @@ function ics(){
   const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Calendario Treinos//PT-BR//','CALSCALE:GREGORIAN','X-WR-CALNAME:Treinos e campeonatos','X-WR-TIMEZONE:America/Bahia','BEGIN:VTIMEZONE','TZID:America/Bahia','BEGIN:STANDARD','DTSTART:19700101T000000','TZOFFSETFROM:-0300','TZOFFSETTO:-0300','TZNAME:-03','END:STANDARD','END:VTIMEZONE'];
   const h0=parse(TODAY);
   S.treinos.forEach((t,i)=>{const d=new Date(h0);d.setDate(d.getDate()+((t.dia-d.getDay()+7)%7));
-    L.push('BEGIN:VEVENT',`UID:t${i}-${z(d)}@treinos`,'DTSTAMP:'+st,`DTSTART;TZID=America/Bahia:${z(d)}T${hm(t.ini)}`,`DTEND;TZID=America/Bahia:${z(d)}T${hm(t.fim)}`,`RRULE:FREQ=WEEKLY;BYDAY=${BY[t.dia]}`,'SUMMARY:Treino '+EQ[t.eq],'LOCATION:'+E(t.local));
+    L.push('BEGIN:VEVENT',`UID:t${i}-${z(d)}@treinos`,'DTSTAMP:'+st,`DTSTART;TZID=America/Bahia:${z(d)}T${hm(t.ini)}`,`DTEND;TZID=America/Bahia:${z(d)}T${hm(t.fim)}`,`RRULE:FREQ=WEEKLY;BYDAY=${BY[t.dia]}`,'SUMMARY:'+MN[ui.mod]+' · Treino '+EQ[t.eq],'LOCATION:'+E(t.local));
     S.eventos.filter(x=>x.tipo==='folga'&&(x.cat==='A'||x.cat===t.eq)).forEach(x=>{for(let c=parse(x.ini),e=parse(x.fim||x.ini);c<=e;c.setDate(c.getDate()+1))if(c.getDay()===t.dia&&c>=d)L.push(`EXDATE;TZID=America/Bahia:${z(c)}T${hm(t.ini)}`)});
     L.push('END:VEVENT')});
   S.eventos.filter(x=>x.tipo!=='folga'&&x.ini).forEach(x=>{const e=parse(x.fim||x.ini);e.setDate(e.getDate()+1);
@@ -204,7 +206,7 @@ function csv(){
   return '\ufeff'+[H.map(q).join(';'),...[...S.eventos].sort((a,b)=>a.ini.localeCompare(b.ini)).map(e=>[e.titulo,TIPO[e.tipo],CAT[e.cat],br(e.ini),br(e.fim),e.local,e.tipo==='campeonato'?e.status:'',e.fonte,br(e.verif),e.obs].map(q).join(';'))].join('\r\n');
 }
 function resumo(){
-  let t=`*Treinos e campeonatos*${S.atualizado?' (atualizado em '+br(S.atualizado)+')':''}\n\n*Treinos*\n`;
+  let t=`*Treinos e campeonatos · ${MN[ui.mod]}*${S.atualizado?' (atualizado em '+br(S.atualizado)+')':''}\n\n*Treinos*\n`;
   for(const k of['F','M']){const g={};S.treinos.filter(x=>x.eq===k).forEach(x=>{(g[x.ini+'–'+x.fim+(x.local?' ('+x.local+')':'')]??=[]).push(DC[x.dia])});t+=EQ[k]+': '+Object.entries(g).map(([h,d])=>d.join('/')+' '+h).join(' · ')+'\n'}
   const p=S.eventos.filter(e=>(e.fim||e.ini)>=TODAY).sort((a,b)=>a.ini.localeCompare(b.ini));
   t+='\n*Próximos eventos*\n'+(p.length?p.map(e=>`• ${br(e.ini)}${e.fim&&e.fim!==e.ini?' a '+br(e.fim):''} – ${e.titulo} (${CAT[e.cat]})${e.local?' – '+e.local:''}${e.tipo==='campeonato'?' [' +e.status+']':''}`).join('\n'):'Nenhum cadastrado.');
@@ -223,8 +225,8 @@ document.addEventListener('click',async ev=>{
   if(a==='tab'){ui.tab=b.dataset.t;render()}
   else if(a==='eq'){ui.eq=b.dataset.k;render()}
   else if(a==='mais'){ui.days+=14;render()}
-  else if(a==='open'){ui.mod='volei';ui.tab=matchMedia('(max-width:700px)').matches?'ag':'cal';render();scrollTo(0,0)}
-  else if(a==='home'){ui.mod=null;render();scrollTo(0,0)}
+  else if(a==='open'){ui.mod=b.dataset.m;ui.eq='T';ui.days=21;sel();ui.tab=matchMedia('(max-width:700px)').matches?'ag':'cal';render();scrollTo(0,0)}
+  else if(a==='home'){ui.mod=null;S=ALL;render();scrollTo(0,0)}
   else if(a==='prev'||a==='next'){ui.m+=a==='next'?1:-1;if(ui.m<0){ui.m=11;ui.y--}if(ui.m>11){ui.m=0;ui.y++}render()}
   else if(a==='hoje'){ui.y=now.getFullYear();ui.m=now.getMonth();render()}
   else if(a==='toggle'){ui.edit=!ui.edit;render()}
@@ -236,8 +238,8 @@ document.addEventListener('click',async ev=>{
   else if(a==='cancel')$('#dlg').close();
   else if(a==='disc'){S=JSON.parse(orig);ui.dirty=false;render()}
   else if(a==='save')save();
-  else if(a==='ics')dl('treinos-e-campeonatos.ics',ics());
-  else if(a==='csv')dl('campeonatos.csv',csv());
+  else if(a==='ics')dl('treinos-'+ui.mod+'.ics',ics());
+  else if(a==='csv')dl('campeonatos-'+ui.mod+'.csv',csv());
   else if(a==='zap'){$('#dlg').innerHTML=`<b>Resumo para colar no WhatsApp</b><textarea id="tx" rows="12" style="width:100%;margin-top:8px;padding:8px;border:1px solid var(--ln);border-radius:8px;background:var(--bg)"></textarea><div class="btns" style="margin-top:10px;justify-content:flex-end"><button data-act="copy">Copiar</button><button class="p" data-act="cancel">Fechar</button></div>`;$('#tx').value=resumo();$('#dlg').showModal()}
   else if(a==='copy'){const t=$('#tx');t.select();try{await navigator.clipboard.writeText(t.value);b.textContent='Copiado'}catch(x){b.textContent='Selecione e copie (Ctrl+C)'}}
 });
